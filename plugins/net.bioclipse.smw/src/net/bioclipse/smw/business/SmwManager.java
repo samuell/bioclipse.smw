@@ -30,7 +30,7 @@ public class SmwManager implements IBioclipseManager {
         return "smw";
     }
     
-    public String queryWithSparql( String wikiURL, String sparqlQuery ) {
+    public String sparql( String wikiURL, String sparqlQuery ) {
     	StringMatrix result = new StringMatrix();
     	String resultString = ""; 
     	RDFManager myRdfManager = new RDFManager();
@@ -38,11 +38,14 @@ public class SmwManager implements IBioclipseManager {
         // Make some configurations
     	String serviceURL = wikiURL + "Special:SPARQLEndpoint";
 
-    	// Execute SPARQL
-    	result = myRdfManager.sparqlRemote(serviceURL, sparqlQuery, null );
-
+		// Execute SPARQL
+    	if ( sparqlQuery.contains("CONSTRUCT") ) {
+    		resultString = myRdfManager.sparqlConstructRemote(serviceURL, sparqlQuery, null);    		
+    	} else {
+    		result = myRdfManager.sparqlRemote(serviceURL, sparqlQuery, null );
+        	resultString = result.toString();
+    	}
     	// Convert and return results
-    	resultString = result.toString();
     	return resultString;
     }
 }

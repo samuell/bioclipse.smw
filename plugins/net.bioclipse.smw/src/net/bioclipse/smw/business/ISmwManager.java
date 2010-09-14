@@ -26,6 +26,6 @@ public interface ISmwManager extends IBioclipseManager {
 			params="String wikiURL, String sparqlQuery", 
 			methodSummary="Executes a SPARQL query against the remote wikis SPARQL Endpoint"
 	)
-	public String queryWithSparql( String wikiURL, String sparqlQuery );
+	public String sparql( String wikiURL, String sparqlQuery );
 
 }
