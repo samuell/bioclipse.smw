@@ -23,6 +23,14 @@ public interface ISmwManager extends IBioclipseManager {
 
 	@Recorded
 	@PublishedMethod(
+			params="String wikiURL, int limit ", 
+			methodSummary="Receives all triples from the specified wiki in RDF/XML format," +
+					" limited by limit. limit = 0 means \"no limit\""
+	)
+	public String getAllTriples( String wikiURL, int limit );
+	
+	@Recorded
+	@PublishedMethod(
 			params="String wikiURL, String sparqlQuery", 
 			methodSummary="Executes a SPARQL query against the remote wikis SPARQL Endpoint"
 	)
