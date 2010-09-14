@@ -30,7 +30,7 @@ public class SmwManager implements IBioclipseManager {
         return "smw";
     }
     
-    public String getAllTriples( String wikiURL, int limit ) {
+    public String getTriples( String wikiURL, int limit ) {
     	String sparqlQuery = "";
     	String resultRDFXML = "";
     	

@@ -27,7 +27,7 @@ public interface ISmwManager extends IBioclipseManager {
 			methodSummary="Receives all triples from the specified wiki in RDF/XML format," +
 					" limited by limit. limit = 0 means \"no limit\""
 	)
-	public String getAllTriples( String wikiURL, int limit );
+	public String getTriples( String wikiURL, int limit );
 	
 	@Recorded
 	@PublishedMethod(
