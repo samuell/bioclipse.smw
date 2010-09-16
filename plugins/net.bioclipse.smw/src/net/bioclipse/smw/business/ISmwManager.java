@@ -31,9 +31,19 @@ public interface ISmwManager extends IBioclipseManager {
 	
 	@Recorded
 	@PublishedMethod(
-			params="String wikiURL, String sparqlQuery", 
+			params="String subject, String predicate, String object, String wikiURL", 
+			methodSummary="Adds a triple to the specified wiki, where the triple is" +
+					"specified by subject, predicate and object."
+	)
+	public String addTriple( String subject, String predicate, String object, String wikiURL );
+	
+	@Recorded
+	@PublishedMethod(
+			params="String sparqlQuery, String wikiURL", 
 			methodSummary="Executes a SPARQL query against the remote wikis SPARQL Endpoint"
 	)
-	public String sparql( String wikiURL, String sparqlQuery );
-
+	public String sparql( String sparqlQuery, String wikiURL );
+	
+	public String DownloadURL(String url);
+	
 }
