@@ -33,9 +33,19 @@ public interface ISmwManager extends IBioclipseManager {
 	@PublishedMethod(
 			params="String subject, String predicate, String object, String wikiURL", 
 			methodSummary="Adds a triple to the specified wiki, where the triple is" +
-					"specified by subject, predicate and object."
+					"specified by subject, predicate and object. Wiki article titles" +
+					"can be used, by prepending them with the \"w:\" prefix."
 	)
 	public String addTriple( String subject, String predicate, String object, String wikiURL );
+	
+	@Recorded
+	@PublishedMethod(
+			params="String subject, String predicate, String object, String wikiURL", 
+			methodSummary="Removes a triple to the specified wiki, where the triple is" +
+					"specified by subject, predicate and object. Wiki article titles" +
+					"can be used, by prepending them with the \"w:\" prefix."
+	)
+	public String removeTriple( String subject, String predicate, String object, String wikiURL );
 	
 	@Recorded
 	@PublishedMethod(

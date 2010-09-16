@@ -20,6 +20,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.managers.business.IBioclipseManager;
 import net.bioclipse.rdf.business.RDFManager;
 import net.bioclipse.rdf.model.StringMatrix;
@@ -56,16 +57,74 @@ public class SmwManager implements IBioclipseManager {
     
     public String addTriple( String subject, String predicate, String object, String wikiURL ) {
     	String result = null;
+    	String action = "INSERT";
+    	try {
+			result = updateTriple( subject, predicate, object, wikiURL, action );
+		} catch (BioclipseException e) {
+			e.printStackTrace();
+		}
+    	return result;
+    }
+    
+    public String removeTriple( String subject, String predicate, String object, String wikiURL ) {
+    	String result = null;
+    	String action = "DELETE";
+    	try {
+			result = updateTriple( subject, predicate, object, wikiURL, action );
+		} catch (BioclipseException e) {
+			e.printStackTrace();
+		}
+    	return result;
+    }
+
+    private String updateTriple( String subject, String predicate, String object, String wikiURL, String action ) throws BioclipseException {
+    	String result = null;
     	String sparqlQuery = null;
     	String sparqlGetQueryURL = null;
+    	String subjectPart = null;
+    	String predicatePart = null;
+    	String objectPart = null;
+    	boolean delete = false;
+    	String actionPart = null;
     	
+    	if ( action.equals("DELETE") ) {
+    		delete = true;
+    	} else if ( action.equals("INSERT") ) {
+    		delete = false;
+    	} else {
+    		throw new BioclipseException("No action set in SmwManager.updateTriple method");
+    	}
+
     	wikiURL = ensureTrailingSlash( wikiURL );
 
-    	sparqlQuery = urlencode("@PREFIX w : <" + wikiURL + "Special:URIResolver/> . INSERT INTO <> ") +
+    	if ( subject.contains("http://") ) {
+    		subjectPart = urlencode("<") + subject + urlencode("> ");
+    	} else {
+    		subjectPart = subject + urlencode(" ");
+    	}
+    	
+    	if ( predicate.contains("http://") ) {
+    		predicatePart = urlencode("<") + predicate + urlencode("> ");
+    	} else {
+    		predicatePart = predicate + urlencode(" ");
+    	}
+    	
+    	if ( object.contains("http://") ) {
+    		objectPart = urlencode("<") + object + urlencode("> ");
+    	} else {
+    		objectPart = object + urlencode(" ");
+    	}
+    	
+    	if ( delete ) {
+        	actionPart = urlencode( "DELETE " );    		
+    	} else {
+        	actionPart = urlencode( "INSERT INTO <> " );
+    	}
+    	
+    	sparqlQuery = urlencode("@PREFIX w : <" + wikiURL + "Special:URIResolver/> . ") + 
+    	actionPart +
     	urlencode("{ ") +
-    	urlencode("<") + subject + urlencode("> ") +
-    	urlencode("<") + predicate + urlencode("> ") +
-    	urlencode("<") + object + urlencode("> ") +  
+    	subjectPart + predicatePart + objectPart +
     	urlencode("}");
 
     	sparqlGetQueryURL = wikiURL + "Special:SPARQLEndpoint?query=" + sparqlQuery;
