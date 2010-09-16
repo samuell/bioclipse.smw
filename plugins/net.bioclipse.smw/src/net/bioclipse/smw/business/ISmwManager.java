@@ -23,12 +23,27 @@ public interface ISmwManager extends IBioclipseManager {
 
 	@Recorded
 	@PublishedMethod(
-			params="String wikiURL, int limit ", 
-			methodSummary="Receives all triples from the specified wiki in RDF/XML format," +
-					" limited by limit. limit = 0 means \"no limit\""
+			params="String wikiURL, String outputFormat, int limit", 
+			methodSummary="Receives all triples from the specified wiki in the specified format," +
+					"(such as RDF/XML) limited by limit. limit = 0 means \"no limit\""
 	)
-	public String getTriples( String wikiURL, int limit );
+	public String getTriples( String wikiURL, String format, int limit );
 	
+	@Recorded
+	@PublishedMethod(
+			params="String wikiURL, String outputFormat", 
+			methodSummary="Receives all triples from the specified wiki in the specified format," +
+					"(such as RDF/XML)."
+	)
+	public String getTriples( String wikiURL, String format );
+
+	@Recorded
+	@PublishedMethod(
+			params="String wikiURL", 
+			methodSummary="Receives all triples from the specified wiki in RDF/XML format."
+	)
+	public String getTriples( String wikiURL );
+
 	@Recorded
 	@PublishedMethod(
 			params="String subject, String predicate, String object, String wikiURL", 
@@ -54,6 +69,14 @@ public interface ISmwManager extends IBioclipseManager {
 	)
 	public String sparql( String sparqlQuery, String wikiURL );
 	
+	@Recorded
+	@PublishedMethod(
+			params="String sparqlQuery, String wikiURL, String outputFormat", 
+			methodSummary="This is for executing a SPARQL CONSTRUCT query against the remote " +
+					"wikis SPARQL Endpoint, and receiving RDF data in the specified format"
+	)
+	public String sparql( String sparqlQuery, String wikiURL, String ouputFormat );
+
 	public String DownloadURL(String url);
 	
 }

@@ -13,7 +13,8 @@ Require-Bundle: net.bioclipse.rdf,
  net.bioclipse.scripting,
  org.springframework.bundle.spring.aop,
  net.sf.cglib,
- org.springframework.osgi.aopalliance.osgi
+ org.springframework.osgi.aopalliance.osgi,
+ com.hp.hpl.jena;bundle-version="2.6.2"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.apache.log4j
 Bundle-ActivationPolicy: lazy
