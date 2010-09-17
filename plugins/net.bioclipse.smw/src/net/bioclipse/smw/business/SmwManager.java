@@ -23,6 +23,7 @@ import java.net.URLEncoder;
 
 import net.bioclipse.core.business.BioclipseException;
 import net.bioclipse.managers.business.IBioclipseManager;
+import net.bioclipse.rdf.business.IRDFStore;
 import net.bioclipse.rdf.business.RDFManager;
 import net.bioclipse.rdf.model.StringMatrix;
 
@@ -167,16 +168,17 @@ public class SmwManager implements IBioclipseManager {
 			format = "RDF/XML";
 		String resultString = null; 
 		RDFManager myRdfManager = new RDFManager();
-		Model rdfModel = null;
+		IRDFStore rdfModel = null;
 
 		// Make some configurations
 		String serviceURL = wikiURL + "Special:SPARQLEndpoint";
 
-		rdfModel = myRdfManager.sparqlConstructRemote(serviceURL, sparqlQuery, null);    
-		StringWriter strWriter = new StringWriter();
-		rdfModel.write(strWriter, format);             
-		resultString = strWriter.toString();
-
+		try {
+			rdfModel = myRdfManager.sparqlConstructRemote(serviceURL, sparqlQuery, null);
+		} catch (BioclipseException e) {
+			e.printStackTrace();
+		}    
+		resultString = rdfModel.toString();
 		return resultString;
 	}
 
