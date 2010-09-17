@@ -44,9 +44,10 @@ public class SmwManager implements IBioclipseManager {
 		return "smw";
 	}
 
-	public String getTriples( String wikiURL, String format, int limit ) {
-		String sparqlQuery = "";
-		String resultRDFXML = "";
+	public IRDFStore getRDF( String wikiURL, int limit ) {
+		String sparqlQuery = null;
+		RDFManager myRdfManager = new RDFManager();
+		IRDFStore resultRDF = null;
 
 		if ( limit == 0 ) {
 			sparqlQuery = "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }";    		
@@ -55,16 +56,20 @@ public class SmwManager implements IBioclipseManager {
 			"LIMIT " + Integer.toString( limit );    		
 		}
 
-		resultRDFXML = sparql( sparqlQuery, wikiURL, format );
-		return resultRDFXML;
+		// Make some configurations
+		String serviceURL = wikiURL + "Special:SPARQLEndpoint";
+
+		try {
+			resultRDF = myRdfManager.sparqlConstructRemote(serviceURL, sparqlQuery, null );
+		} catch (BioclipseException e) {
+			e.printStackTrace();
+		}
+		
+		return resultRDF;
 	}
 
-	public String getTriples( String wikiURL, String format ) {
-		return getTriples( wikiURL, format, 0 );
-	}
-
-	public String getTriples( String wikiURL ) {
-		return getTriples( wikiURL, "RDF/XML" );
+	public IRDFStore getRDF( String wikiURL ) {
+		return getRDF( wikiURL, 0 );
 	}
 
 	public String addTriple( String subject, String predicate, String object, String wikiURL ) {
@@ -160,25 +165,6 @@ public class SmwManager implements IBioclipseManager {
 			resultString = result.toString();
 		}
 		// Convert and return results
-		return resultString;
-	}
-
-	public String sparql( String sparqlQuery, String wikiURL, String format ) {
-		if ( format == null )
-			format = "RDF/XML";
-		String resultString = null; 
-		RDFManager myRdfManager = new RDFManager();
-		IRDFStore rdfModel = null;
-
-		// Make some configurations
-		String serviceURL = wikiURL + "Special:SPARQLEndpoint";
-
-		try {
-			rdfModel = myRdfManager.sparqlConstructRemote(serviceURL, sparqlQuery, null);
-		} catch (BioclipseException e) {
-			e.printStackTrace();
-		}    
-		resultString = rdfModel.toString();
 		return resultString;
 	}
 

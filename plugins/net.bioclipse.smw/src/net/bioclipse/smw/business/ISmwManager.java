@@ -14,6 +14,7 @@ import net.bioclipse.core.PublishedClass;
 import net.bioclipse.core.PublishedMethod;
 import net.bioclipse.core.Recorded;
 import net.bioclipse.managers.business.IBioclipseManager;
+import net.bioclipse.rdf.business.IRDFStore;
 import net.bioclipse.rdf.model.StringMatrix;
 
 @PublishedClass(
@@ -23,26 +24,17 @@ public interface ISmwManager extends IBioclipseManager {
 
 	@Recorded
 	@PublishedMethod(
-			params="String wikiURL, String outputFormat, int limit", 
-			methodSummary="Receives all triples from the specified wiki in the specified format," +
-					"(such as RDF/XML) limited by limit. limit = 0 means \"no limit\""
+			params="String wikiURL, int limit", 
+			methodSummary="Returns all triples from an RDFIO powered wiki (limited by limit) as an IRDFStore. limit = 0 means \"no limit\""
 	)
-	public String getTriples( String wikiURL, String format, int limit );
+	public IRDFStore getRDF( String wikiURL, int limit );
 	
 	@Recorded
 	@PublishedMethod(
-			params="String wikiURL, String outputFormat", 
-			methodSummary="Receives all triples from the specified wiki in the specified format," +
-					"(such as RDF/XML)."
-	)
-	public String getTriples( String wikiURL, String format );
-
-	@Recorded
-	@PublishedMethod(
 			params="String wikiURL", 
-			methodSummary="Receives all triples from the specified wiki in RDF/XML format."
+			methodSummary="Returns all triples from an RDFIO powered wiki as an IRDFStore"
 	)
-	public String getTriples( String wikiURL );
+	public IRDFStore getRDF( String wikiURL );
 
 	@Recorded
 	@PublishedMethod(
