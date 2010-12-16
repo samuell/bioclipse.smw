@@ -28,6 +28,7 @@ import net.bioclipse.rdf.business.RDFManager;
 import net.bioclipse.rdf.model.StringMatrix;
 
 import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.CoreException;
 
 import com.hp.hpl.jena.rdf.model.Model;
 
@@ -44,6 +45,12 @@ public class SmwManager implements IBioclipseManager {
 		return "smw";
 	}
 
+	/**
+	 * Get
+	 * @param wikiURL
+	 * @param limit
+	 * @return resultRDF
+	 */
 	public IRDFStore getRDF( String wikiURL, int limit ) {
 		String sparqlQuery = null;
 		RDFManager myRdfManager = new RDFManager();
@@ -71,6 +78,38 @@ public class SmwManager implements IBioclipseManager {
 	public IRDFStore getRDF( String wikiURL ) {
 		return getRDF( wikiURL, 0 );
 	}
+	
+	public void putRDF( IRDFStore rdfData, String wikiURL ) {
+		// Create a Manager for SPARQLing the rdfData
+		RDFManager myRdfManager = new RDFManager();
+		String sparqlInsertTriple;
+		String sparqlGetAllTriples = "SELECT ?s ?p ?o WHERE { ?s ?p ?o }";
+		try {
+			StringMatrix rdfDataMatrix = myRdfManager.sparql(rdfData, sparqlGetAllTriples);
+			int mxRowsCnt = rdfDataMatrix.getRowCount();
+			System.out.println("mxRowsCnt: " + mxRowsCnt);
+			// We skip the first row which just contains column names
+			for (int i=1; i<mxRowsCnt; i++) {
+			sparqlInsertTriple = "INSERT INTO <> {\n";
+			sparqlInsertTriple += "<" + rdfDataMatrix.get(i, 1) + 
+					 			"> <" + rdfDataMatrix.get(i, 2) +
+					 			"> <" + rdfDataMatrix.get(i, 3) + "> .\n";
+			sparqlInsertTriple += "}\n";
+			System.out.println("SPARQL INSERT CODE:\n---------------------------------\n" + 
+					sparqlInsertTriple);
+			sparql(sparqlInsertTriple, wikiURL);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (BioclipseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	public String addTriple( String subject, String predicate, String object, String wikiURL ) {
 		String result = null;
@@ -92,6 +131,27 @@ public class SmwManager implements IBioclipseManager {
 			e.printStackTrace();
 		}
 		return result;
+	}
+
+	public String sparql( String sparqlQuery, String wikiURL ) {
+		StringMatrix result = new StringMatrix();
+		String resultString = null; 
+		RDFManager myRdfManager = new RDFManager();
+		wikiURL = ensureTrailingSlash(wikiURL);
+
+		// Make some configurations
+		String serviceURL = wikiURL + "Special:SPARQLEndpoint";
+
+		if ( sparqlQuery.contains("INSERT INTO <") ) {
+			String sparqlQueryUrlEnc = urlencode(sparqlQuery); 
+			String getURL = serviceURL + "?query=" + sparqlQueryUrlEnc; 
+			resultString = downloadURL(getURL);
+		} else {
+			result = myRdfManager.sparqlRemote(serviceURL, sparqlQuery, null );
+			resultString = result.toString();
+		}
+		// Convert and return results
+		return resultString;
 	}
 
 	private String updateTriple( String subject, String predicate, String object, String wikiURL, String action ) throws BioclipseException {
@@ -148,27 +208,8 @@ public class SmwManager implements IBioclipseManager {
 		result = downloadURL( sparqlGetQueryURL );
 		return result;
 	}
-
-	public String sparql( String sparqlQuery, String wikiURL ) {
-		StringMatrix result = new StringMatrix();
-		String resultString = null; 
-		RDFManager myRdfManager = new RDFManager();
-
-		// Make some configurations
-		String serviceURL = wikiURL + "Special:SPARQLEndpoint";
-
-		if ( sparqlQuery.contains("INSERT") ) {
-			result = myRdfManager.sparqlRemote(serviceURL, sparqlQuery, null );
-			resultString = result.toString();
-		} else {
-			result = myRdfManager.sparqlRemote(serviceURL, sparqlQuery, null );
-			resultString = result.toString();
-		}
-		// Convert and return results
-		return resultString;
-	}
-
-	public String downloadURL(String url) {
+	
+	private String downloadURL(String url) {
 		String resultString = null;
 		try {
 			try {

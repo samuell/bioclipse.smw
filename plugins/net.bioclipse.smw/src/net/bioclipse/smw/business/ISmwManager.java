@@ -38,6 +38,13 @@ public interface ISmwManager extends IBioclipseManager {
 
 	@Recorded
 	@PublishedMethod(
+			params="IRDFStore rdf, String wikiURL", 
+			methodSummary="Outputs the RDF content of an RDF store to the SMW wiki at the specified URL"
+	)
+	public void putRDF( IRDFStore rdf, String wikiURL );
+		
+	@Recorded
+	@PublishedMethod(
 			params="String subject, String predicate, String object, String wikiURL", 
 			methodSummary="Adds a triple to the specified wiki, where the triple is" +
 					"specified by subject, predicate and object. Wiki article titles" +
@@ -60,15 +67,4 @@ public interface ISmwManager extends IBioclipseManager {
 			methodSummary="Executes a SPARQL query against the remote wikis SPARQL Endpoint"
 	)
 	public String sparql( String sparqlQuery, String wikiURL );
-	
-	@Recorded
-	@PublishedMethod(
-			params="String sparqlQuery, String wikiURL, String outputFormat", 
-			methodSummary="This is for executing a SPARQL CONSTRUCT query against the remote " +
-					"wikis SPARQL Endpoint, and receiving RDF data in the specified format"
-	)
-	public String sparql( String sparqlQuery, String wikiURL, String ouputFormat );
-
-	public String DownloadURL(String url);
-	
 }
